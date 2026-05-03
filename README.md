@@ -1,1 +1,1 @@
-# camera_site
+<!DOCTYPE html>
