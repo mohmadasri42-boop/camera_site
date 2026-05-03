@@ -1,26 +1,77 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Camera</title>
+  <title>Camera Send</title>
 </head>
 <body>
 
-<h2>Camera Test</h2>
+<h2>Camera Capture & Send</h2>
 
 <video id="video" width="300" autoplay></video>
+<br><br>
+
+<button onclick="takePhoto()">📸 تصوير</button>
+<button onclick="sendPhoto()">📤 إرسال الصورة</button>
+
+<h3>Preview:</h3>
+<img id="photo" width="300"/>
 
 <script>
-  const video = document.getElementById("video");
+const video = document.getElementById("video");
+const photo = document.getElementById("photo");
 
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-      video.srcObject = stream;
+let imageData = "";
+
+// تشغيل الكاميرا (بإذن المستخدم)
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    video.srcObject = stream;
+  })
+  .catch(err => {
+    alert("ماقدرتش نفتح الكاميرا");
+    console.log(err);
+  });
+
+// تصوير الصورة
+function takePhoto() {
+  const canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0);
+
+  imageData = canvas.toDataURL("image/png");
+  photo.src = imageData;
+}
+
+// إرسال الصورة لسيرفر
+function sendPhoto() {
+  if (!imageData) {
+    alert("صور أولاً 📸");
+    return;
+  }
+
+  fetch("YOUR_SERVER_URL", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      image: imageData
     })
-    .catch(err => {
-      console.log("Camera error:", err);
-      alert("ماقدرتش نفتح الكاميرا");
-    });
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert("تم إرسال الصورة ✅");
+    console.log(data);
+  })
+  .catch(err => {
+    alert("خطأ فالإرسال ❌");
+    console.log(err);
+  });
+}
 </script>
 
 </body>
